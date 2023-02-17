@@ -1,0 +1,58 @@
+version: "3.7"
+services:
+    gateway:
+        build:
+            context: gateway/docker/development/nginx
+        ports:
+            - "8080:8080"
+            - "8081:8081"
+        depends_on:
+            - frontend
+            - api
+
+    frontend:
+        build:
+            context: docker/frontend/development/nginx
+        volumes:
+            - ./frontend:/app
+
+    api:
+        build:
+            context: docker/api/development/nginx
+        volumes:
+            - ./api:/app
+        depends_on:
+            - api-php-fpm
+
+    api-php-fpm:
+        build:
+            context: docker/api/development/php-fpm
+        env_file: .env
+        environment:
+            PHP_IDE_CONFIG: serverName=API
+        volumes:
+            - ./api:/app
+
+    api-php-cli:
+        build:
+            context: docker/api/development/php-cli
+        env_file: .env
+        volumes:
+            - ./api:/app
+
+    api-mysql:
+        image: mysql:8.0
+        env_file: .env
+        command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8 --collation-server=utf8_general_ci
+        ports:
+            - 3306:3306
+        environment:
+            - MYSQL_ROOT_PASSWORD=root
+            - MYSQL_PASSWORD=secret
+            - MYSQL_USER=app
+            - MYSQL_DATABASE=app
+        volumes:
+            - api-mysql:/var/lib/mysql
+
+volumes:
+    api-mysql:
