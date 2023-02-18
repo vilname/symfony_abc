@@ -11,9 +11,16 @@ use JsonSerializable;
 use DateTime;
 
 #[ORM\Table(name: '`products`')]
+#[ORM\Index(fields: ["date"], name: "products_date_index")]
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 class Product implements JsonSerializable
 {
+    public const START_SHIPMENT_BY_FIBONACCI_NUMBERS = '2021-01-13';
+
+    public const EARLY_DATE = '2021-01-01';
+
+    public const PRODUCT_SHIPMENT_BY_FIBONACCI_NUMBERS = 'Левый носок';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]

@@ -2,6 +2,9 @@ const form = document.calculatePriceAndQuantity;
 
 form.onsubmit = function (event) {
     event.preventDefault();
+    const errorDate = document.querySelector('.js-error-date');
+    errorDate.innerText = '';
+    errorDate.style.display = 'none';
 
     let formItem = {};
 
@@ -22,6 +25,11 @@ form.onsubmit = function (event) {
             return response.json();
         })
         .then((data) => {
+
+            if (data.type === 'error') {
+                return data;
+            }
+
             let productHtml = '';
             data.products.forEach((product) => {
                 productHtml += `
@@ -48,7 +56,12 @@ form.onsubmit = function (event) {
             }
 
             document.querySelector('.js-content-product-stock').innerHTML = productStorkHtml;
+        })
+        .then((error) => {
+            errorDate.innerText = error.message;
+            errorDate.style.display = 'block';
 
-            console.log('data', data)
+            document.querySelector('.js-content-product').innerHTML = '';
+            document.querySelector('.js-content-product-stock').innerHTML = '';
         });
 }
